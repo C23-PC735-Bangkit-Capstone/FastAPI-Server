@@ -1,0 +1,17 @@
+Get All Devices
+GET /Devices
+
+Get Devices by PondId
+GET /Devices/<PondId>
+
+Get Device by Id
+GET /Devices/Device/<DeviceId>
+
+Update Device by Id
+PUT /Devices/<DeviceId>
+
+Delete Device by Id
+DELETE /Devices/<DeviceId>
+
+Create new Device
+POST /Devices

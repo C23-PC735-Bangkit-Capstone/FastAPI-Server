@@ -1,12 +1,13 @@
-"""
-Primary FastPI ASGI application
-
-"""
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from app.api.endpoints import api_routes
+from app.api.user_package.router import router as users_router
+from app.api.pond_package.router import router as ponds_router
+from app.api.device_package.router import router as devices_router
+from app.api.vibration_package.router import router as vibrations_router
+from app.api.vibrationhealth_package.router import router as vibrationhealths_router
 
+from app.database import get_db
 
 def create_app():
     # Initialize FastAPI app
@@ -21,7 +22,11 @@ def create_app():
         allow_origins=['*'],
     )
 
-    app.include_router(api_routes)
+    app.include_router(users_router)
+    app.include_router(ponds_router)
+    app.include_router(devices_router)
+    app.include_router(vibrations_router)
+    app.include_router(vibrationhealths_router)
 
     return app
 

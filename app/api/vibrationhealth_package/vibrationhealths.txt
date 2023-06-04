@@ -1,0 +1,8 @@
+Get Vibration Health by DeviceId
+GET /VibrationHealth/<DeviceId>
+
+Get Vibration Health by DeviceId and Date
+GET /VibrationHealth/<DeviceId>/<Date>
+
+Post new Vibration Health
+POST /VibrationHealth

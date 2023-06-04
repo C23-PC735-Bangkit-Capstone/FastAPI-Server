@@ -1,0 +1,14 @@
+Get All Users
+GET /Users
+
+Get User by Id
+GET /Users/<UserId>
+
+Update User by Id
+PUT /Users/<UserId>
+
+Delete User by Id
+DELETE /Users/<UserId>
+
+Create new User
+POST /Users
