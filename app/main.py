@@ -9,9 +9,22 @@ from app.api.vibrationhealth_package.router import router as vibrationhealths_ro
 
 from app.database import get_db
 
+description = """
+The Smart Vibration Monitoring System for Shrimp Paddle Wheel Aerator's API Server is a component of a larger system designed to monitor the vibrations of shrimp paddle wheel aerators. This API server provides a way to interact with the system programmatically.
+"""
+
 def create_app():
     # Initialize FastAPI app
-    app = FastAPI()
+    app = FastAPI(
+        title="The Smart Vibration Monitoring System API Server",
+        description=description,
+        version="0.0.1",
+        contact={
+            "name": "Yahya Aqrom",
+            "url": "https://yahyaqr.github.io/",
+            "email": "aqrom.yahya75@gmail.com",
+        },
+    )
 
     # Enable CORS via middleware
     app.add_middleware(
