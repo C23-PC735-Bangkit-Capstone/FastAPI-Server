@@ -9,27 +9,27 @@ ponds = [
     Pond(id=3, pond_id=3, user_id=2, pond_location="37.700421688980136, -81.84535319999998"),
 ]
 
-@router.get("/Ponds")
+@router.get("/Ponds", tags=["Ponds"])
 def get_all_ponds():
     if ponds:
         return ponds
     raise HTTPException(status_code=404, detail="No ponds found.")
 
-@router.get("/Ponds/{user_id}")
+@router.get("/Ponds/{user_id}", tags=["Ponds"])
 def get_ponds_by_user_id(user_id: int):
     result = [pond for pond in ponds if pond.user_id == user_id]
     if result:
         return result
     raise HTTPException(status_code=404, detail="No ponds found for the provided UserId.")
 
-@router.get("/Ponds/Pond/{pond_id}")
+@router.get("/Ponds/Pond/{pond_id}", tags=["Ponds"])
 def get_pond_by_id(pond_id: int):
     for pond in ponds:
         if pond.id == pond_id:
             return pond
     raise HTTPException(status_code=404, detail="Pond not found.")
 
-@router.put("/Ponds/{pond_id}")
+@router.put("/Ponds/{pond_id}", tags=["Ponds"])
 def update_pond_by_id(pond_id: int, pond: Pond):
     for p in ponds:
         if p.id == pond_id:
@@ -38,7 +38,7 @@ def update_pond_by_id(pond_id: int, pond: Pond):
             return {"message": "Pond updated successfully."}
     raise HTTPException(status_code=404, detail="Pond not found.")
 
-@router.delete("/Ponds/{pond_id}")
+@router.delete("/Ponds/{pond_id}", tags=["Ponds"])
 def delete_pond_by_id(pond_id: int):
     for i, pond in enumerate(ponds):
         if pond.id == pond_id:
@@ -46,7 +46,7 @@ def delete_pond_by_id(pond_id: int):
             return {"message": "Pond deleted successfully."}
     raise HTTPException(status_code=404, detail="Pond not found.")
 
-@router.post("/Ponds")
+@router.post("/Ponds", tags=["Ponds"])
 def create_pond(pond: Pond):
     ponds.append(pond)
     return {"message": "Pond created successfully."}
