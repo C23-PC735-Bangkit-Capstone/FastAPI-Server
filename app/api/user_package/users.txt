@@ -12,3 +12,12 @@ DELETE /Users/<UserId>
 
 Create new User
 POST /Users
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    user_infos VARCHAR NOT NULL,
+    alarm_sound VARCHAR NOT NULL,
+    notification_sound VARCHAR NOT NULL,
+    contacts VARCHAR NOT NULL
+);

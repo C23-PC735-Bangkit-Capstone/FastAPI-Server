@@ -15,3 +15,12 @@ DELETE /Devices/<DeviceId>
 
 Create new Device
 POST /Devices
+
+CREATE TABLE devices (
+    id SERIAL PRIMARY KEY,
+    device_id INT NOT NULL,
+    pond_id INT NOT NULL,
+    signal_strength INT NOT NULL,
+    battery_strength INT NOT NULL,
+    condition VARCHAR NOT NULL
+);

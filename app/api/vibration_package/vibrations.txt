@@ -6,3 +6,12 @@ GET /Vibrations/<DeviceId>/<Date>
 
 Post new Vibration
 POST /Vibrations
+
+CREATE TABLE vibrations (
+    id SERIAL PRIMARY KEY,
+    timestamp TIMESTAMP NOT NULL,
+    device_id INT NOT NULL,
+    accx FLOAT NOT NULL,
+    accy FLOAT NOT NULL,
+    accz FLOAT NOT NULL
+);
