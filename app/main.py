@@ -7,6 +7,8 @@ from starlette.middleware.cors import CORSMiddleware
 from .database import engine, SessionLocal
 from . import models, schemas
 
+models.Base.metadata.create_all(bind=engine)
+
 description = """
 The Smart Vibration Monitoring System for Shrimp Paddle Wheel Aerator's API Server is a component of a larger system designed to monitor the vibrations of shrimp paddle wheel aerators. This API server provides a way to interact with the system programmatically.
 """
@@ -14,9 +16,6 @@ The Smart Vibration Monitoring System for Shrimp Paddle Wheel Aerator's API Serv
 # models.Base.metadata.create_all(bind=engine)
 
 def create_app():
-    # Initialize FastAPI app
-
-
     app = FastAPI(
         title="The Smart Vibration Monitoring System API Server",
         description=description,
@@ -37,6 +36,10 @@ def create_app():
         allow_origins=['*'],
     )
 
+    return app
+
+app = create_app()
+
 # Dependency
 def get_db():
     db = SessionLocal()
@@ -44,8 +47,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
-application = create_app()
 
 @app.get("/")
 def check_db(db: Session = Depends(get_db)):
