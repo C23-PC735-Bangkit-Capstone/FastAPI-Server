@@ -1,20 +1,22 @@
-from fastapi import FastAPI
+from typing import List
+
+from fastapi import Depends, FastAPI, Response, status
+from sqlalchemy.orm import Session
 from starlette.middleware.cors import CORSMiddleware
 
-from app.api.user_package.router import router as users_router
-from app.api.pond_package.router import router as ponds_router
-from app.api.device_package.router import router as devices_router
-from app.api.vibration_package.router import router as vibrations_router
-from app.api.vibrationhealth_package.router import router as vibrationhealths_router
-
-from app.database import get_db, SessionLocal
+from .database import engine, SessionLocal
+from . import models, schemas
 
 description = """
 The Smart Vibration Monitoring System for Shrimp Paddle Wheel Aerator's API Server is a component of a larger system designed to monitor the vibrations of shrimp paddle wheel aerators. This API server provides a way to interact with the system programmatically.
 """
 
+# models.Base.metadata.create_all(bind=engine)
+
 def create_app():
     # Initialize FastAPI app
+
+
     app = FastAPI(
         title="The Smart Vibration Monitoring System API Server",
         description=description,
@@ -35,16 +37,17 @@ def create_app():
         allow_origins=['*'],
     )
 
-    # Dependency to get the database session
-    app.dependency_overrides[get_db] = SessionLocal
-
-    app.include_router(users_router)
-    app.include_router(ponds_router)
-    app.include_router(devices_router)
-    app.include_router(vibrations_router)
-    app.include_router(vibrationhealths_router)
-
-    return app
-
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 application = create_app()
+
+@app.get("/")
+def check_db(db: Session = Depends(get_db)):
+    print("Database session:", db)
+    return Response(status_code=status.HTTP_200_OK)

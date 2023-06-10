@@ -9,7 +9,7 @@ POST /VibrationHealth
 
 CREATE TABLE vibration_health (
     id SERIAL PRIMARY KEY,
-    timestamp TIMESTAMP NOT NULL,
+    timestamp TIMESTAMPTZ NOT NULL,
     device_id INT NOT NULL,
     health_category VARCHAR NOT NULL,
     health_score INT NOT NULL

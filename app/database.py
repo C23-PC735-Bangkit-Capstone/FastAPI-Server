@@ -1,29 +1,37 @@
+import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from google.cloud.sql.connector import Connector, IPTypes
 
-# Configure the database connection
-db_username = "postgres"
-db_password = "janganlupa75"
-db_name = "smartmonitoringapp"
-db_instance_connection_name = None
+# load env vars
+load_dotenv()
 
-if db_instance_connection_name:
-    # Create the SQLAlchemy engine for Google Cloud SQL
-    engine = create_engine(
-        f"mysql+mysqlconnector://{db_username}:{db_password}@localhost/{db_name}?unix_socket=/cloudsql/{db_instance_connection_name}"
+# Cloud SQL Python Connector creator function
+def getconn():
+    # if env var PRIVATE_IP is set to True, use private IP Cloud SQL connections
+    ip_type = IPTypes.PRIVATE if os.getenv("PRIVATE_IP") is True else IPTypes.PUBLIC
+    # if env var DB_IAM_USER is set, use IAM database authentication
+    user, enable_iam_auth = (
+        (os.getenv("DB_IAM_USER"), True)
+        if os.getenv("DB_IAM_USER")
+        else (os.getenv("DB_USER"), False)
     )
-else:
-    # Create the SQLAlchemy engine for localhost
-    engine = create_engine(
-        f"mysql+mysqlconnector://{db_username}:{db_password}@localhost/{db_name}"
-    )
+    # initialize Cloud SQL Python connector object
+    with Connector(ip_type=ip_type, enable_iam_auth=enable_iam_auth) as connector:
+        conn = connector.connect(
+            os.getenv("INSTANCE_CONNECTION_NAME"),
+            "pg8000",
+            user=user,
+            password=os.getenv("DB_PASS", ""),
+            db=os.getenv("DB_NAME"),
+        )
+        return conn
 
-# Create a session factory
+SQLALCHEMY_DATABASE_URL = "postgresql+pg8000://"
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL, creator=getconn)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+Base = declarative_base()

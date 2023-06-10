@@ -7,6 +7,7 @@ GET /Vibrations/<DeviceId>/<Date>
 Post new Vibration
 POST /Vibrations
 
+DROP TABLE IF EXISTS vibrations;
 CREATE TABLE vibrations (
     id SERIAL PRIMARY KEY,
     timestamp TIMESTAMP NOT NULL,
