@@ -1,9 +1,10 @@
 import os
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
 from google.cloud.sql.connector import Connector, IPTypes
+
+from .models import VibrationHealth, Vibration, Users, Pond, Device
 
 # load env vars
 load_dotenv()
@@ -34,4 +35,21 @@ SQLALCHEMY_DATABASE_URL = "postgresql+pg8000://"
 engine = create_engine(SQLALCHEMY_DATABASE_URL, creator=getconn)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base = declarative_base()
+# Reflect existing tables (optional)
+metadata = MetaData()
+metadata.reflect(bind=engine)
+
+# Bind metadata objects of your models
+metadata.bind = engine
+metadata.reflect(only=[
+    "vibration_health",
+    "vibration",
+    "users",
+    "pond",
+    "device",
+])
+
+# Create the tables
+metadata.create_all(bind=engine)
+
+

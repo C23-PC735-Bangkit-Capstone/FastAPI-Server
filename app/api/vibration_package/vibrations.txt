@@ -8,7 +8,7 @@ Post new Vibration
 POST /Vibrations
 
 DROP TABLE IF EXISTS vibrations;
-CREATE TABLE vibrations (
+CREATE TABLE vibration (
     id SERIAL PRIMARY KEY,
     timestamp TIMESTAMP NOT NULL,
     device_id INT NOT NULL,

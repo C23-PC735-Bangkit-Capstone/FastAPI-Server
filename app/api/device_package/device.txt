@@ -1,22 +1,23 @@
-Get All Devices
-GET /Devices
+Get All Device
+GET /Device
 
-Get Devices by PondId
-GET /Devices/<PondId>
+Get Device by PondId
+GET /Device/<PondId>
 
 Get Device by Id
-GET /Devices/Device/<DeviceId>
+GET /Device/Device/<DeviceId>
 
 Update Device by Id
-PUT /Devices/<DeviceId>
+PUT /Device/<DeviceId>
 
 Delete Device by Id
-DELETE /Devices/<DeviceId>
+DELETE /Device/<DeviceId>
 
 Create new Device
-POST /Devices
+POST /Device
 
-CREATE TABLE devices (
+DROP TABLE IF EXISTS device;
+CREATE TABLE device (
     id SERIAL PRIMARY KEY,
     device_id INT NOT NULL,
     pond_id INT NOT NULL,

@@ -1,0 +1,51 @@
+DROP TABLE IF EXISTS devices;
+DROP TABLE IF EXISTS device;
+CREATE TABLE device (
+    id SERIAL PRIMARY KEY,
+    device_id INT NOT NULL,
+    pond_id INT NOT NULL,
+    signal_strength INT NOT NULL,
+    battery_strength INT NOT NULL,
+    condition VARCHAR NOT NULL
+);
+
+DROP TABLE IF EXISTS ponds;
+DROP TABLE IF EXISTS pond;
+CREATE TABLE pond (
+    id SERIAL PRIMARY KEY,
+    pond_id INT NOT NULL,
+    user_id INT NOT NULL,
+    pond_location VARCHAR NOT NULL
+);
+
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS user;
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,
+    user_infos VARCHAR NOT NULL,
+    alarm_sound VARCHAR NOT NULL,
+    notification_sound VARCHAR NOT NULL,
+    contacts VARCHAR NOT NULL
+);
+
+DROP TABLE IF EXISTS vibrations;
+DROP TABLE IF EXISTS vibration;
+CREATE TABLE vibration (
+    id SERIAL PRIMARY KEY,
+    timestamp TIMESTAMP NOT NULL,
+    device_id INT NOT NULL,
+    accx FLOAT NOT NULL,
+    accy FLOAT NOT NULL,
+    accz FLOAT NOT NULL
+);
+
+DROP TABLE IF EXISTS vibration_healths;
+DROP TABLE IF EXISTS vibration_health;
+CREATE TABLE vibration_health (
+    id SERIAL PRIMARY KEY,
+    timestamp TIMESTAMPTZ NOT NULL,
+    device_id INT NOT NULL,
+    health_category VARCHAR NOT NULL,
+    health_score INT NOT NULL
+);

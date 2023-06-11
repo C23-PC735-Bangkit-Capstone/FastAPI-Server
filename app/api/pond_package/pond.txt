@@ -16,7 +16,8 @@ DELETE /Ponds/<PondId>
 Create new Pond
 POST /Ponds
 
-CREATE TABLE ponds (
+DROP TABLE IF EXISTS pond;
+CREATE TABLE pond (
     id SERIAL PRIMARY KEY,
     pond_id INT NOT NULL,
     user_id INT NOT NULL,

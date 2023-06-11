@@ -1,14 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from .models import Vibration
-from datetime import datetime
+from .schemas import Vibration
 
 router = APIRouter()
-
-vibrations = [
-    Vibration(id=1, timestamp=datetime(2023, 1, 1, 23, 3, 20), device_id=1, accx=0.4, accy=3, accz=-7),
-    Vibration(id=2, timestamp=datetime(2023, 1, 1, 23, 3, 20), device_id=1, accx=0.4, accy=3, accz=-7),
-    Vibration(id=3, timestamp=datetime(2023, 1, 1, 23, 3, 20), device_id=2, accx=0.4, accy=3, accz=-7),
-]
 
 @router.get("/Vibrations/{device_id}", tags=["Vibrations"])
 def get_vibrations_by_device_id(device_id: int):

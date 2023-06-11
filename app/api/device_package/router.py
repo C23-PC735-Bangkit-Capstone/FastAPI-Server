@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from .models import Device
+from .schemas import Device
 
 router = APIRouter()
 
@@ -9,27 +9,27 @@ devices = [
     {"id": 3, "device_id": 3, "pond_id": 2, "signal_strength": 80, "battery_strength": 80, "condition": "normal"},
 ]
 
-@router.get("/Devices", tags=["Devices"])
+@router.get("/Device", tags=["Device"])
 def get_all_devices():
     if devices:
         return devices
     raise HTTPException(status_code=404, detail="No devices found.")
 
-@router.get("/Devices/{pond_id}", tags=["Devices"])
+@router.get("/Device/{pond_id}", tags=["Device"])
 def get_devices_by_pond_id(pond_id: int):
     result = [device for device in devices if device["pond_id"] == pond_id]
     if result:
         return result
     raise HTTPException(status_code=404, detail="No devices found for the provided PondId.")
 
-@router.get("/Devices/Device/{device_id}", tags=["Devices"])
+@router.get("/Device/Device/{device_id}", tags=["Device"])
 def get_device_by_id(device_id: int):
     for device in devices:
         if device["id"] == device_id:
             return device
     raise HTTPException(status_code=404, detail="Device not found.")
 
-@router.put("/Devices/{device_id}", tags=["Devices"])
+@router.put("/Device/{device_id}", tags=["Device"])
 def update_device_by_id(device_id: int):
     for device in devices:
         if device["id"] == device_id:
@@ -38,7 +38,7 @@ def update_device_by_id(device_id: int):
             return {"message": "Device updated successfully."}
     raise HTTPException(status_code=404, detail="Device not found.")
 
-@router.delete("/Devices/{device_id}", tags=["Devices"])
+@router.delete("/Device/{device_id}", tags=["Device"])
 def delete_device_by_id(device_id: int):
     for i, device in enumerate(devices):
         if device["id"] == device_id:
@@ -46,7 +46,7 @@ def delete_device_by_id(device_id: int):
             return {"message": "Device deleted successfully."}
     raise HTTPException(status_code=404, detail="Device not found.")
 
-@router.post("/Devices", tags=["Devices"])
+@router.post("/Device", tags=["Device"])
 def create_device(device: Device):
     devices.append(device)
     return {"message": "Device created successfully."}

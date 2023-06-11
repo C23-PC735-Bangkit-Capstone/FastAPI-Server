@@ -1,19 +1,13 @@
-from typing import List
-
 from fastapi import Depends, FastAPI, Response, status
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import OperationalError
 from starlette.middleware.cors import CORSMiddleware
 
-from .database import engine, SessionLocal
-from . import models, schemas
-
-models.Base.metadata.create_all(bind=engine)
+from .database import SessionLocal
 
 description = """
 The Smart Vibration Monitoring System for Shrimp Paddle Wheel Aerator's API Server is a component of a larger system designed to monitor the vibrations of shrimp paddle wheel aerators. This API server provides a way to interact with the system programmatically.
 """
-
-# models.Base.metadata.create_all(bind=engine)
 
 def create_app():
     app = FastAPI(
@@ -48,7 +42,11 @@ def get_db():
     finally:
         db.close()
 
-@app.get("/")
+@app.get("/", tags=["Debug"])
 def check_db(db: Session = Depends(get_db)):
-    print("Database session:", db)
-    return Response(status_code=status.HTTP_200_OK)
+    try:
+        db.execute("SELECT 1")  # Execute a simple query to check database connectivity
+        return Response(content="Database is accessible", status_code=status.HTTP_200_OK)
+    except OperationalError as e:
+        error_message = f"Database connection error: {str(e)}"
+        return Response(content=error_message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)

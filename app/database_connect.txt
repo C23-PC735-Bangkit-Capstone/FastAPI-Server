@@ -1,0 +1,2 @@
+gcloud sql connect cloud-sql-fastapi --user=postgres -d=smart-vibration-monitoring --quiet
+cloud-sql-fastapi-password-12345!

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from .models import Pond
+from .schemas import Pond
 
 router = APIRouter()
 
