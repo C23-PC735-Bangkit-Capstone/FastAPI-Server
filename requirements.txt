@@ -1,2 +1,9 @@
-# Production requirements for Google App Engine
--r requirements-common.txt
+# Common requirements used across local dev and production
+fastapi
+gunicorn
+starlette
+uvicorn
+cloud-sql-python-connector
+pg8000
+SQLAlchemy
+python-dotenv
