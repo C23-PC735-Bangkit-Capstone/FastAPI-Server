@@ -1,0 +1,8 @@
+Get Vibrations by device_id
+GET /vibration/<device_id>
+
+Get Vibrations by device_id and date
+GET /vibration/<device_id>/<date>
+
+Post new Vibration
+POST /vibration
