@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
 from google.cloud.sql.connector import Connector, IPTypes
 
-from .models import VibrationHealth, Vibration, Users, Pond, Device
+# from .models import VibrationHealth, Vibration, Users, Pond, Device
 
 # load env vars
 load_dotenv()
@@ -52,4 +52,10 @@ metadata.reflect(only=[
 # Create the tables
 metadata.create_all(bind=engine)
 
-
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
