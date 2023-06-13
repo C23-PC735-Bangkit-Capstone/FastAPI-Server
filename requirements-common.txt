@@ -6,6 +6,8 @@ sqladmin
 SQLAlchemy
 gunicorn
 uvicorn
-cloud-sql-python-connector
+asyncpg
 pg8000
+cloud-sql-python-connector[asyncpg]
+cloud-sql-python-connector[pg8000]
 python-dotenv
