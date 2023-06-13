@@ -1,18 +1,25 @@
 import os
-from dotenv import load_dotenv
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
 from google.cloud.sql.connector import Connector, IPTypes
 
-# from .models import VibrationHealth, Vibration, Users, Pond, Device
+INSTANCE_CONNECTION_NAME = "bangkit-capstone-387911:asia-southeast2:cloud-sql-fastapi"
+DB_USER = "postgres"
+DB_PASS = "cloud-sql-fastapi-password-12345!"
+DB_NAME = "smart-vibration-monitoring"
+PRIVATE_IP = False
 
-# load env vars
-load_dotenv()
+# Set the environment variables
+os.environ["PRIVATE_IP"] = str(PRIVATE_IP)
+os.environ["INSTANCE_CONNECTION_NAME"] = INSTANCE_CONNECTION_NAME
+os.environ["DB_USER"] = DB_USER
+os.environ["DB_PASS"] = DB_PASS
+os.environ["DB_NAME"] = DB_NAME
 
 # Cloud SQL Python Connector creator function
 def getconn():
     # if env var PRIVATE_IP is set to True, use private IP Cloud SQL connections
-    ip_type = IPTypes.PRIVATE if os.getenv("PRIVATE_IP") is True else IPTypes.PUBLIC
+    ip_type = IPTypes.PRIVATE if os.getenv("PRIVATE_IP") == "True" else IPTypes.PUBLIC
     # if env var DB_IAM_USER is set, use IAM database authentication
     user, enable_iam_auth = (
         (os.getenv("DB_IAM_USER"), True)
@@ -41,7 +48,7 @@ metadata.reflect(bind=engine)
 
 # Bind metadata objects of your models
 metadata.bind = engine
-metadata.reflect(only=[
+metadata.reflect(bind=engine, only=[
     "vibration_health",
     "vibration",
     "users",

@@ -7,7 +7,7 @@
   },
   "scripts": {
     "start": "uvicorn app.main:app --reload",
-    "start:prod": "gunicorn --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind :9000 app.main:application",
+    "start:prod": "gunicorn --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind :9000 app.main:app",
     "test": "pytest"
   },
   "repository": {
