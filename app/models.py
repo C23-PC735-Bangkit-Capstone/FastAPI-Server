@@ -1,5 +1,5 @@
 from sqlalchemy import Column, DateTime, Integer, String, Float, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
@@ -8,7 +8,7 @@ class Device(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     device_id = Column(Integer, nullable=False)
-    pond_id = Column(Integer, ForeignKey('pond.id'))
+    pond_id = Column(Integer, ForeignKey('pond.pond_id'))
     signal_strength = Column(Integer, nullable=False)
     battery_strength = Column(Integer, nullable=False)
     condition = Column(String(30), nullable=False)
@@ -18,7 +18,7 @@ class Pond(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     pond_id = Column(Integer, nullable=False)
-    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)
     pond_location = Column(String(30), nullable=False)
 
 class Users(Base):
@@ -36,7 +36,7 @@ class Vibration(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     timestamp = Column(DateTime)
-    device_id = Column(Integer, ForeignKey('device.id'), nullable=False)
+    device_id = Column(Integer, ForeignKey('device.device_id'), nullable=False)
     accx = Column(Float, nullable=False)
     accy = Column(Float, nullable=False)
     accz = Column(Float, nullable=False)
@@ -46,6 +46,6 @@ class VibrationHealth(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     timestamp = Column(DateTime)
-    device_id = Column(Integer, ForeignKey('device.id'), nullable=False)
+    device_id = Column(Integer, ForeignKey('device.device_id'), nullable=False)
     health_category = Column(String(30), nullable=False)
     health_score = Column(Integer, nullable=False)
