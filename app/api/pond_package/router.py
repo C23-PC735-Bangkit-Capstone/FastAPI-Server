@@ -1,52 +1,61 @@
+from fastapi import Depends, APIRouter, HTTPException
+from typing import List
+from sqlalchemy.orm import Session
+from .schemas import Pond as PondSchema
+from app.models import Pond as PondModel
+from app.database import get_db
+
+
 from fastapi import APIRouter, HTTPException
 from .schemas import Pond
 
 router = APIRouter()
 
-ponds = [
-    Pond(id=1, pond_id=1, user_id=1, pond_location="37.700421688980136, -81.84535319999998"),
-    Pond(id=2, pond_id=2, user_id=1, pond_location="37.700421688980136, -81.84535319999998"),
-    Pond(id=3, pond_id=3, user_id=2, pond_location="37.700421688980136, -81.84535319999998"),
-]
+@router.get("/ponds", response_model=List[PondSchema], tags=["Pond"])
+def get_all_ponds(db: Session = Depends(get_db)):
+    ponds = db.query(PondModel).all()
+    if not ponds:
+        raise HTTPException(status_code=404, detail="Pond data not found")
+    return ponds
 
-@router.get("/Ponds", tags=["Ponds"])
-def get_all_ponds():
-    if ponds:
-        return ponds
-    raise HTTPException(status_code=404, detail="No ponds found.")
+@router.post("/ponds", response_model=List[PondSchema], tags=["Pond"])
+def create_pond(pond: PondSchema, db: Session = Depends(get_db)):
+    db_pond = PondModel(**pond.dict())
+    db.add(db_pond)
+    db.commit()
+    db.refresh(db_pond)
+    return [pond]
 
-@router.get("/Ponds/{user_id}", tags=["Ponds"])
-def get_ponds_by_user_id(user_id: int):
-    result = [pond for pond in ponds if pond.user_id == user_id]
-    if result:
-        return result
-    raise HTTPException(status_code=404, detail="No ponds found for the provided UserId.")
+@router.get("/ponds/{user_id}", response_model=List[PondSchema], tags=["Pond"])
+def get_ponds_by_user_id(user_id: int, db: Session = Depends(get_db)):
+    ponds = db.query(PondModel).filter(PondModel.user_id == user_id).all()
+    if not ponds:
+        raise HTTPException(status_code=404, detail="Pond data not found for the user ID")
+    return ponds
 
-@router.get("/Ponds/Pond/{pond_id}", tags=["Ponds"])
-def get_pond_by_id(pond_id: int):
-    for pond in ponds:
-        if pond.id == pond_id:
-            return pond
-    raise HTTPException(status_code=404, detail="Pond not found.")
+@router.get("/ponds/pond/{pond_id}", response_model=List[PondSchema], tags=["Pond"])
+def get_pond_by_id(pond_id: int, db: Session = Depends(get_db)):
+    ponds = db.query(PondModel).filter(PondModel.pond_id == pond_id).all()
+    if not ponds:
+        raise HTTPException(status_code=404, detail="Pond data not found for the pond ID")
+    return ponds
 
-@router.put("/Ponds/{pond_id}", tags=["Ponds"])
-def update_pond_by_id(pond_id: int, pond: Pond):
-    for p in ponds:
-        if p.id == pond_id:
-            # Update the pond information
-            p.name = pond.name
-            return {"message": "Pond updated successfully."}
-    raise HTTPException(status_code=404, detail="Pond not found.")
+@router.put("/ponds/{pond_id}", response_model=PondSchema, tags=["Pond"])
+def update_pond_by_id(pond_id: int, updated_pond: PondSchema, db: Session = Depends(get_db)):
+    pond = db.query(PondModel).filter(PondModel.pond_id == pond_id).first()
+    if not pond:
+        raise HTTPException(status_code=404, detail="Pond data not found for the pond ID")
+    for attr, value in updated_pond.dict(exclude_unset=True).items():
+        setattr(pond, attr, value)
+    db.commit()
+    db.refresh(pond)
+    return pond
 
-@router.delete("/Ponds/{pond_id}", tags=["Ponds"])
-def delete_pond_by_id(pond_id: int):
-    for i, pond in enumerate(ponds):
-        if pond.id == pond_id:
-            del ponds[i]
-            return {"message": "Pond deleted successfully."}
-    raise HTTPException(status_code=404, detail="Pond not found.")
-
-@router.post("/Ponds", tags=["Ponds"])
-def create_pond(pond: Pond):
-    ponds.append(pond)
-    return {"message": "Pond created successfully."}
+@router.delete("/ponds/{pond_id}", response_model=PondSchema, tags=["Pond"])
+def delete_pond_by_id(pond_id: int, db: Session = Depends(get_db)):
+    pond = db.query(PondModel).filter(PondModel.pond_id == pond_id).first()
+    if not pond:
+        raise HTTPException(status_code=404, detail="Pond not found.")
+    db.delete(pond)
+    db.commit()
+    return pond

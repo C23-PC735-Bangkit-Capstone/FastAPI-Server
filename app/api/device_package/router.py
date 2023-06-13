@@ -1,52 +1,59 @@
-from fastapi import APIRouter, HTTPException
-from .schemas import Device
+from fastapi import Depends, APIRouter, HTTPException
+from typing import List
+from sqlalchemy.orm import Session
+from .schemas import Device as DeviceSchema
+from app.models import Device as DeviceModel
+from app.database import get_db
 
 router = APIRouter()
 
-devices = [
-    {"id": 1, "device_id": 1, "pond_id": 1, "signal_strength": 80, "battery_strength": 80, "condition": "normal"},
-    {"id": 2, "device_id": 2, "pond_id": 1, "signal_strength": 80, "battery_strength": 80, "condition": "normal"},
-    {"id": 3, "device_id": 3, "pond_id": 2, "signal_strength": 80, "battery_strength": 80, "condition": "normal"},
-]
+@router.get("/device", response_model=List[DeviceSchema], tags=["Device"])
+def get_all_devices(db: Session = Depends(get_db)):
+    devices = db.query(DeviceModel).all()
+    if not devices:
+        raise HTTPException(status_code=404, detail="Device data not found")
+    return devices
 
-@router.get("/Device", tags=["Device"])
-def get_all_devices():
-    if devices:
-        return devices
-    raise HTTPException(status_code=404, detail="No devices found.")
+@router.post("/device", response_model=List[DeviceSchema], tags=["Device"])
+def create_device(device: DeviceSchema, db: Session = Depends(get_db)):
+    db_device = DeviceModel(**device.dict())
+    db.add(db_device)
+    db.commit()
+    db.refresh(db_device)
+    return [device]
 
-@router.get("/Device/{pond_id}", tags=["Device"])
-def get_devices_by_pond_id(pond_id: int):
-    result = [device for device in devices if device["pond_id"] == pond_id]
-    if result:
-        return result
-    raise HTTPException(status_code=404, detail="No devices found for the provided PondId.")
+@router.get("/device/{pond_id}", response_model=List[DeviceSchema], tags=["Device"])
+def get_devices_by_pond_id(pond_id: int, db: Session = Depends(get_db)):
+    devices = db.query(DeviceModel).filter(DeviceModel.pond_id == pond_id).all()
+    if not devices:
+        raise HTTPException(status_code=404, detail="Device data not found for the user ID")
+    return devices
 
-@router.get("/Device/Device/{device_id}", tags=["Device"])
-def get_device_by_id(device_id: int):
-    for device in devices:
-        if device["id"] == device_id:
-            return device
-    raise HTTPException(status_code=404, detail="Device not found.")
 
-@router.put("/Device/{device_id}", tags=["Device"])
-def update_device_by_id(device_id: int):
-    for device in devices:
-        if device["id"] == device_id:
-            # Update the device information
-            device["name"] = "Updated Device"
-            return {"message": "Device updated successfully."}
-    raise HTTPException(status_code=404, detail="Device not found.")
+@router.get("/device/Device/{device_id}", response_model=List[DeviceSchema], tags=["Device"])
+def get_device_by_device_id(device_id: int, db: Session = Depends(get_db)):
+    devices = db.query(DeviceModel).filter(DeviceModel.device_id == device_id).all()
+    if not devices:
+        raise HTTPException(status_code=404, detail="Device data not found for the user ID")
+    return devices
 
-@router.delete("/Device/{device_id}", tags=["Device"])
-def delete_device_by_id(device_id: int):
-    for i, device in enumerate(devices):
-        if device["id"] == device_id:
-            del devices[i]
-            return {"message": "Device deleted successfully."}
-    raise HTTPException(status_code=404, detail="Device not found.")
 
-@router.post("/Device", tags=["Device"])
-def create_device(device: Device):
-    devices.append(device)
-    return {"message": "Device created successfully."}
+@router.put("/device/{device_id}", response_model=DeviceSchema, tags=["Device"])
+def update_device_by_id(device_id: int, updated_device: DeviceSchema, db: Session = Depends(get_db)):
+    device = db.query(DeviceModel).filter(DeviceModel.device_id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device data not found for the pond ID")
+    for attr, value in updated_device.dict(exclude_unset=True).items():
+        setattr(device, attr, value)
+    db.commit()
+    db.refresh(device)
+    return device
+
+@router.delete("/device/{device_id}", response_model=DeviceSchema, tags=["Device"])
+def delete_device_by_id(device_id: int, db: Session = Depends(get_db)):
+    device = db.query(DeviceModel).filter(DeviceModel.device_id == device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found.")
+    db.delete(device)
+    db.commit()
+    return device
