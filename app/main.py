@@ -1,6 +1,7 @@
-from fastapi import Depends, FastAPI, Response, status
+from fastapi import Depends, FastAPI
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import OperationalError
+from starlette.responses import RedirectResponse
 from starlette.middleware.cors import CORSMiddleware
 
 from app.api.device_package.router import router as device_router
@@ -42,19 +43,22 @@ def create_app():
     app.include_router(users_router)
     app.include_router(vibration_router)
     app.include_router(vibrationhealth_router)
-    
+
     create_admin(app, engine)
 
     return app
 
 app = create_app()
 
-@app.get("/", tags=["Debug"])
-def check_db(db: Session = Depends(get_db)):
+@app.get("/", tags=["Debug"], include_in_schema=False)
+def check_db_and_go_to_admin(db: Session = Depends(get_db)):
     try:
-        db.execute("SELECT 1")  # Execute a simple query to check database connectivity
-        return Response(content="Database is accessible", status_code=status.HTTP_200_OK)
+        db.execute("SELECT 1")
+        response_message = "Database is accessible"
+        print(response_message)
+        return RedirectResponse(url="/admin")
     except OperationalError as e:
         error_message = f"Database connection error: {str(e)}"
-        return Response(content=error_message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        print(error_message)
+        return
 
