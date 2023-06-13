@@ -19,7 +19,7 @@ class Pond(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     pond_id = Column(Integer, nullable=False)
     user_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)
-    pond_location = Column(String(30), nullable=False)
+    pond_location = Column(String(120), nullable=False)
 
 class Users(Base):
     __tablename__ = 'users'

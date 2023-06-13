@@ -8,6 +8,7 @@ def create_admin(app, engine):
         name = "Device"
         name_plural = "Devices"
         icon = "fas fa-mobile"
+        column_default_sort = [{'device_id', True}, {'pond_id', True}]
         column_searchable_list = ['pond_id']
         column_sortable_list = ['device_id', 'pond_id', 'signal_strength', 'battery_strength', 'condition']
         column_list = ['device_id', 'pond_id', 'signal_strength', 'battery_strength', 'condition']
@@ -16,6 +17,7 @@ def create_admin(app, engine):
         name = "Pond"
         name_plural = "Ponds"
         icon = "fas fa-fish"
+        column_default_sort = [{'pond_id', True}, {'user_id', True}]
         column_searchable_list = ['user_id']
         column_sortable_list = ['pond_id', 'user_id', 'pond_location']
         column_list = ['pond_id', 'user_id', 'pond_location']
@@ -24,6 +26,7 @@ def create_admin(app, engine):
         name = "User"
         name_plural = "Users"
         icon = "fa-solid fa-user"
+        column_default_sort = [{'user_id', True}]
         column_searchable_list = ['user_id', 'user_infos']
         column_sortable_list = ['user_id', 'user_infos', 'alarm_sound', 'notification_sound', 'contacts']
         column_list = ['user_id', 'user_infos', 'alarm_sound', 'notification_sound', 'contacts']
@@ -32,6 +35,7 @@ def create_admin(app, engine):
         name = "Vibration"
         name_plural = "Vibrations"
         icon = "fas fa-wave-square"
+        column_default_sort = [{'device_id', True}]
         column_searchable_list = ['device_id']
         column_sortable_list = ['device_id', 'timestamp', 'accx', 'accy', 'accz']
         column_list = ['device_id', 'timestamp', 'accx', 'accy', 'accz']
@@ -40,6 +44,7 @@ def create_admin(app, engine):
         name = "Vibration Health"
         name_plural = "Vibration Healths"
         icon = "fa-solid fa-heart-pulse"
+        column_default_sort = [{'device_id', True}]
         column_searchable_list = ['device_id']
         column_sortable_list = ['device_id', 'timestamp', 'health_category', 'health_score']
         column_list = ['device_id', 'timestamp', 'health_category', 'health_score']
