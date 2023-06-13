@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, String, Float
+from sqlalchemy import Column, DateTime, Integer, String, Float, Boolean
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
@@ -11,7 +11,9 @@ class Device(Base):
     pond_id = Column(Integer, nullable=False)
     signal_strength = Column(Integer, nullable=False)
     battery_strength = Column(Integer, nullable=False)
-    condition = Column(String(30), nullable=False)
+    device_status = Column(Boolean, nullable=False)
+    monitor_status = Column(Boolean, nullable=False)
+    paddlewheel_condition = Column(String(30), nullable=False)
 
 class Pond(Base):
     __tablename__ = 'pond'

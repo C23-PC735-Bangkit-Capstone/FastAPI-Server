@@ -5,7 +5,9 @@ class Device(BaseModel):
     pond_id: int
     signal_strength: int
     battery_strength: int
-    condition: str
+    device_status: bool
+    monitor_status: bool
+    paddlewheel_condition: str
 
     class Config:
         orm_mode = True

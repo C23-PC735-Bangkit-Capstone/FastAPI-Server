@@ -10,8 +10,8 @@ def create_admin(app, engine):
         icon = "fas fa-mobile"
         column_default_sort = [{'device_id', True}, {'pond_id', True}]
         column_searchable_list = ['pond_id']
-        column_sortable_list = ['device_id', 'pond_id', 'signal_strength', 'battery_strength', 'condition']
-        column_list = ['device_id', 'pond_id', 'signal_strength', 'battery_strength', 'condition']
+        column_sortable_list = ['device_id', 'pond_id', 'signal_strength', 'battery_strength', 'paddlewheel_condition', 'device_status', 'monitor_status']
+        column_list = ['device_id', 'pond_id', 'signal_strength', 'battery_strength', 'paddlewheel_condition', 'device_status', 'monitor_status']
 
     class PondAdmin(ModelView, model=Pond):
         name = "Pond"
