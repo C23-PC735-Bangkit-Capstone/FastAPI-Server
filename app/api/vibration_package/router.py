@@ -9,12 +9,12 @@ import json
 
 router = APIRouter()
 
-@router.post("/vibrations", tags=["Vibration"])
-async def create_vibration_data_from_stringified_json(data: str, db: Session = Depends(get_db)):
+@router.post("/vibrations/{device_id}", tags=["Vibration"])
+async def create_vibration_data_from_stringified_json(data: str, device_id: int, db: Session = Depends(get_db)):
     nested_array = json.loads(data)
 
     for vibration_data in nested_array:
-        vibration = VibrationSchema(**vibration_data)
+        vibration = VibrationSchema(timestamp=vibration_data[0], device_id=device_id, accx=vibration_data[1], accy=vibration_data[2], accz=vibration_data[3])
         db_vibration = VibrationModel(**vibration.dict())
         db.add(db_vibration)
         db.commit()
