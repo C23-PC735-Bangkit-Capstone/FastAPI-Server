@@ -1,5 +1,4 @@
-from csv import reader
-from fastapi import Depends, File, APIRouter, HTTPException, UploadFile
+from fastapi import Depends, APIRouter, HTTPException
 from typing import List
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -11,18 +10,17 @@ import json
 router = APIRouter()
 
 @router.post("/vibrations", tags=["Vibration"])
-async def create_vibration_data_from_json(file: UploadFile = File(...)):
-    contents = await file.read().decode("utf-8")
-    try:
-        # Try parsing the contents as JSON
-        data = json.loads(contents)
-    except json.JSONDecodeError:
-        # If parsing as JSON fails, parse as a nested array
-        csv_data = reader(contents.splitlines())
-        data = list(csv_data)
+async def create_vibration_data_from_stringified_json(data: str, db: Session = Depends(get_db)):
+    nested_array = json.loads(data)
 
-    print(f"Received file: {file.filename}")
-    return {"filename": file.filename}
+    for vibration_data in nested_array:
+        vibration = VibrationSchema(**vibration_data)
+        db_vibration = VibrationModel(**vibration.dict())
+        db.add(db_vibration)
+        db.commit()
+        db.refresh(db_vibration)
+
+    return {"data": nested_array}
 
 @router.post("/vibration", response_model=List[VibrationSchema], tags=["Vibration"])
 def create_vibration(vibration: VibrationSchema, db: Session = Depends(get_db)):
