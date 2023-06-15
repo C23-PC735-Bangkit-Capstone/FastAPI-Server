@@ -1,6 +1,6 @@
 from fastapi import Depends, APIRouter, HTTPException
 from typing import List
-from sqlalchemy import text
+from sqlalchemy import text, desc
 from sqlalchemy.orm import Session
 from .schemas import Vibration as VibrationSchema
 from app.models import Vibration as VibrationModel
@@ -30,12 +30,12 @@ def create_vibration(vibration: VibrationSchema, db: Session = Depends(get_db)):
     db.refresh(db_vibration)
     return [vibration]
 
-@router.get("/vibration/{device_id}", response_model=List[VibrationSchema], tags=["Vibration"])
+@router.get("/vibrations/{device_id}", response_model=List[VibrationSchema], tags=["Vibration"])
 def get_vibrations_by_device_id(device_id: int, db: Session = Depends(get_db)):
-    vibration = db.query(VibrationModel).filter(VibrationModel.device_id == device_id).all()
-    if not vibration:
+    vibrations = db.query(VibrationModel).filter(VibrationModel.device_id == device_id).order_by(desc(VibrationModel.timestamp)).limit(100).all()
+    if not vibrations:
         raise HTTPException(status_code=404, detail="Vibration data not found for the device ID")
-    return vibration
+    return vibrations
 
 @router.get("/vibration/{device_id}/{date}", response_model=List[VibrationSchema], tags=["Vibration"])
 def get_vibrations_by_device_id_and_date(device_id: int, date: str, db: Session = Depends(get_db)):
