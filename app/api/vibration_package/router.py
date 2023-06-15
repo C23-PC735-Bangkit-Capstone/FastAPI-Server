@@ -32,7 +32,7 @@ def create_vibration(vibration: VibrationSchema, db: Session = Depends(get_db)):
 
 @router.get("/vibrations/{device_id}", response_model=List[VibrationSchema], tags=["Vibration"])
 def get_vibrations_by_device_id(device_id: int, db: Session = Depends(get_db)):
-    vibrations = db.query(VibrationModel).filter(VibrationModel.device_id == device_id).order_by(desc(VibrationModel.timestamp)).limit(100).all()
+    vibrations = db.query(VibrationModel).filter(VibrationModel.device_id == device_id).limit(100).all()
     if not vibrations:
         raise HTTPException(status_code=404, detail="Vibration data not found for the device ID")
     return vibrations
