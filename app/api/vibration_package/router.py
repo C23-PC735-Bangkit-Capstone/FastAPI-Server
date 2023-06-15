@@ -20,8 +20,9 @@ async def create_vibration_data_from_json(file: UploadFile = File(...)):
         # If parsing as JSON fails, parse as a nested array
         csv_data = reader(contents.splitlines())
         data = list(csv_data)
-    print(data)
-    return data
+    
+    print(f"Received file: {file.filename}")
+    return {"filename": file.filename}
 
 @router.post("/vibration", response_model=List[VibrationSchema], tags=["Vibration"])
 def create_vibration(vibration: VibrationSchema, db: Session = Depends(get_db)):
