@@ -1,26 +1,35 @@
+from datetime import datetime
 from fastapi import Depends, APIRouter, HTTPException
 from typing import List
-from sqlalchemy import text, desc
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from .schemas import Vibration as VibrationSchema
+from .schemas import VibrationPackage as VibrationPackageSchema
 from app.models import Vibration as VibrationModel
 from app.database import get_db
-import json
 
 router = APIRouter()
 
-@router.post("/vibrations/{device_id}", tags=["Vibration"])
-async def create_vibration_data_from_stringified_json(data: str, device_id: int, db: Session = Depends(get_db)):
-    nested_array = json.loads(data)
+@router.post("/vibrations", response_model=VibrationPackageSchema, tags=["Vibration"])
+async def create_vibration_data(vibration: VibrationPackageSchema, db: Session = Depends(get_db)):
+    for vibration_data in vibration.data:
+        timestamp = datetime.fromtimestamp(int(vibration_data.Timestamp))
+        accx = float(vibration_data.AccX)
+        accy = float(vibration_data.AccY)
+        accz = float(vibration_data.AccZ)
+        print(timestamp, accx, accy, accz)
+        vibration_instance = VibrationModel(
+            timestamp=timestamp,
+            device_id=vibration.device_id,
+            accx=accx,
+            accy=accy,
+            accz=accz
+        )
+        db.add(vibration_instance)
+    db.commit()
+    db.refresh(vibration_instance)
 
-    for vibration_data in nested_array:
-        vibration = VibrationSchema(timestamp=vibration_data[0], device_id=device_id, accx=vibration_data[1], accy=vibration_data[2], accz=vibration_data[3])
-        db_vibration = VibrationModel(**vibration.dict())
-        db.add(db_vibration)
-        db.commit()
-        db.refresh(db_vibration)
-
-    return {"data": nested_array}
+    return vibration
 
 @router.post("/vibration", response_model=List[VibrationSchema], tags=["Vibration"])
 def create_vibration(vibration: VibrationSchema, db: Session = Depends(get_db)):
